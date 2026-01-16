@@ -3,14 +3,14 @@ import sys
 import os
 
 # Ajout du chemin pour importer nos modules backend
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from backend.database_manager import DatabaseManager
 from backend.ai_engine import InnoMatcher
 
-st.set_page_config(page_title="InnoRadar - Le hub innovation dans le sportS", page_icon="📡")
+st.set_page_config(page_title="InnoRadar - Sport Tech Matchmaker", page_icon="📡")
 
-st.title("⚡️ InnoRadar")
-st.subheader("Let's match !")
+st.title("📡 InnoRadar")
+st.subheader("Le radar d'innovation du sport")
 
 # Initialisation des composants
 db = DatabaseManager("data/solutions.csv")
