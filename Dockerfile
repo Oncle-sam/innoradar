@@ -1,23 +1,23 @@
 # Image de base légère
 FROM python:3.11-slim
 
-# Empêche Python de générer des fichiers .pyc
+# Optimisations Python
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
+# Définit le port par défaut pour que Streamlit sache quoi utiliser
+ENV PORT 8080
 
 WORKDIR /app
 
-# Installation des dépendances
+# Installation des dépendances (vérifiez que streamlit, pandas et google-generativeai y sont)
 COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copie du code et des données
+# Copie de tout le projet
 COPY . .
 
-# Port exposé par Cloud Run (8080 par défaut)
+# Cloud Run ignore EXPOSE, mais c'est une bonne pratique de doc
 EXPOSE 8080
 
-# Commande de lancement (ici pour FastAPI)
-CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8080"]
-
-CMD streamlit run frontend/app.py --server.port=8080 --server.address=0.0.0.0
+# Commande de lancement unique au format JSON (plus stable)
+CMD ["streamlit", "run", "frontend/app.py", "--server.port=8080", "--server.address=0.0.0.0"]

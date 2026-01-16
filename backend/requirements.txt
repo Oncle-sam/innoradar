@@ -1,5 +1,4 @@
-fastapi
-uvicorn
-google-generativeai
+streamlit
 pandas
+google-generativeai
 python-dotenv
