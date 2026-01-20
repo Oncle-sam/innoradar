@@ -2,6 +2,9 @@ import google.generativeai as genai
 import os
 from dotenv import load_dotenv
 
+
+    
+
 load_dotenv()
 
 # Configuration de Gemini
@@ -55,4 +58,11 @@ def generate_recommendation(self, user_need, category_filter=None):
         """
 
         response = model.generate_content(prompt)
+        return response.text
+
+    
+ def ask_chatbot(self, question):
+        prompt = f"""Tu es l'assistant d'InnoRadar. Réponds à : {question}.
+        Si la question concerne un besoin d'outil inexistant, mentionne l'InnoRadar AI Factory."""
+        # ... appel Gemini ...
         return response.text

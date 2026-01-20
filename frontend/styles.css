@@ -106,3 +106,45 @@ html, body, [class*="css"] {
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
 header {visibility: hidden;}
+
+/* Bouton Chatbot (Bas Gauche) */
+.chatbot-trigger {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: linear-gradient(135deg, #4B79FF 0%, #00d4ff 100%);
+    color: white !important;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 28px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    cursor: pointer;
+    z-index: 1001;
+    border: none;
+    transition: transform 0.3s ease;
+}
+
+.chatbot-trigger:hover {
+    transform: scale(1.1);
+}
+
+/* Conteneur de la fenêtre de chat (optionnel si on utilise st.sidebar ou st.popover) */
+.chat-window {
+    position: fixed;
+    bottom: 90px;
+    left: 20px;
+    width: 350px;
+    height: 500px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    z-index: 1002;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #eee;
+}

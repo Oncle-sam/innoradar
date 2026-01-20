@@ -1,59 +1,76 @@
-# frontend/app.py
 import streamlit as st
 import os
-from pages_ui import home, results, details
+import sys
 
+# Import des modules backend
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from backend.database_manager import DatabaseManager
+from backend.ai_engine import InnoMatcher
 
-def load_css():
-    css_file = os.path.join("frontend", "styles.css")
-    if os.path.exists(css_file):
-        with open(css_file) as f:
-            st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
-    else:
-        # Fallback si le fichier est ailleurs
-        st.warning("Fichier CSS introuvable.")
+# Configuration
+st.set_page_config(page_title="InnoRadar", page_icon="⚡", layout="wide")
 
-# Appliquer le CSS
-load_css()
+# Initialisation DB et IA (en cache pour la performance)
+@st.cache_resource
+def init_core():
+    db = DatabaseManager("data/solutions.csv")
+    matcher = InnoMatcher(db)
+    return db, matcher
 
+db, matcher = init_core()
 
-# Config de base
-st.set_page_config(page_title="InnoRadar", layout="wide", page_icon="⚡")
+# Chargement du CSS
+with open("frontend/styles.css") as f:
+    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-# Injection du CSS (Pour le Header custom et le Sticky Button)
-def local_css(file_name):
-    with open(file_name) as f:
-        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
-
-local_css("frontend/styles.css")
-
-# Gestion de la navigation (Session State)
+# --- GESTION DE LA NAVIGATION ---
 if 'page' not in st.session_state:
     st.session_state.page = 'home'
-if 'authenticated' not in st.session_state:
-    st.session_state.authenticated = False # Mettre à True pour tester la version connectée
 
-# Header Custom (Apparaît sur toutes les pages)
-st.markdown("""
-<div class="custom-header">
-    <div class="logo-container">
-        <span class="logo-icon">⚡</span> <span class="logo-text">Innoradar</span>
-    </div>
-    <div class="auth-button">
-        <a href="#" target="_self">Se connecter</a>
-    </div>
-</div>
-""", unsafe_allow_html=True)
+# --- HEADER (Commun) ---
+col_logo, col_auth = st.columns([1, 1])
+with col_logo:
+    st.markdown("### ⚡ Innoradar")
+with col_auth:
+    if st.button("Se connecter", key="auth_btn"):
+        st.session_state.authenticated = True
 
-# Routeur de pages
+# --- ROUTAGE DES PAGES ---
 if st.session_state.page == 'home':
-    home.render_page()
+    # Import local pour éviter les imports circulaires
+    from pages_ui.home import render_home
+    render_home(db)
 elif st.session_state.page == 'results':
-    results.render_page()
-elif st.session_state.page == 'details':
-    details.render_page()
+    from pages_ui.results import render_results
+    render_results(matcher)
 
-# Sticky Button (Partout)
-st.markdown("""
-<a href="#" class="sticky-button">Contacter un expert</a>
+# --- CHATBOT FLOTTANT (Bas Gauche) ---
+with st.popover("🤖"):
+    st.markdown("### Assistant InnoRadar")
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+
+    for msg in st.session_state.messages:
+        with st.chat_message(msg["role"]):
+            st.markdown(msg["content"])
+
+    if prompt := st.chat_input("Une question sur la Sport Tech ?"):
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user"):
+            st.markdown(prompt)
+        
+        with st.chat_message("assistant"):
+            response = matcher.ask_chatbot(prompt) # Nouvelle méthode dans InnoMatcher
+            st.markdown(response)
+            st.session_state.messages.append({"role": "assistant", "content": response})
+
+# --- BOUTON CONTACT (Bas Droite) ---
+st.markdown(f"""
+    <div class="sticky-contact">
+        <a href="mailto:samy@aklam.fr?subject=Contact InnoRadar" style="text-decoration:none;">
+            <button style="background:#1a1a1a; color:white; border-radius:50px; padding:12px 24px; border:none; cursor:pointer;">
+                🤝 Contacter un expert
+            </button>
+        </a>
+    </div>
 """, unsafe_allow_html=True)
