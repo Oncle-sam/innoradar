@@ -2,6 +2,34 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 /* --- GLOBAL DARK THEME RESET --- */
+
+/* Global Dark Theme */
+html, body, [class*="css"] {
+    background-color: #0b0e17 !important;
+    color: #ffffff !important;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Carte Résultat Verticale (Style Image 0) */
+.dark-result-card-vertical {
+    background-color: #1a1d2e;
+    border: 1px solid #2a2e45;
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    min-height: 450px;
+}
+
+.badge-dark { background: #2d2345; color: #a682ff; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+.progress-bar-bg { height: 8px; background: #2a2e45; border-radius: 4px; margin-top: 5px; }
+.progress-bar-fill { height: 100%; border-radius: 4px; }
+
+/* Sticky Buttons */
+div[data-testid="stPopover"] { position: fixed; bottom: 20px; left: 20px; z-index: 1000; }
+.sticky-contact { position: fixed; bottom: 20px; right: 20px; z-index: 1000; }
+
+
 html, body, [class*="css"] {
     font-family: 'Inter', sans-serif;
     background-color: #0b0e17 !important; /* Fond très sombre */
@@ -9,6 +37,25 @@ html, body, [class*="css"] {
 }
 
 /* --- CUSTOM HEADER (Navigation) --- */
+
+.innovation-card {
+    background-color: #1a1d2e;
+    border: 1px solid #2a2e45;
+    border-radius: 16px;
+    padding: 20px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.innovation-card:hover {
+    border-color: #7F56D9;
+    box-shadow: 0 10px 30px rgba(127, 86, 217, 0.1);
+}
+
+.badge-new { background-color: #2e3c32; color: #4ade80; } /* Vert pour nouveauté */
+
+
 .custom-header {
     display: flex;
     justify-content: space-between;
@@ -125,6 +172,76 @@ html, body, [class*="css"] {
 .progress-bar-fill { height: 100%; background: #4ade80; border-radius: 4px; }
 
 /* --- FLOATING ELEMENTS --- */
-/* Ajustement du style des popovers Streamlit pour le dark mode */
+
+/* --- POSITIONNEMENT DES BOUTONS FLOTTANTS --- */
+
+/* --- BOUTON CHATBOT ROND ET FIXE (Bas Gauche) --- */
+
+/* Cible le conteneur global du popover */
+div[data-testid="stPopover"] {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    width: 60px !important; /* Force la largeur du conteneur */
+}
+
+/* Cible précisément le bouton à l'intérieur du popover */
+div[data-testid="stPopover"] > button {
+    border-radius: 50% !important; /* Forme ronde */
+    width: 80px !important;       /* Largeur fixe */
+    height: 60px !important;      /* Hauteur fixe */
+    min-width: 60px !important;
+    max-width: 60px !important;
+    padding: 0 !important;        /* Supprime les marges internes */
+    
+    /* Design visuel */
+    background: linear-gradient(135deg, #4B79FF 0%, #00d4ff 100%) !important;
+    color: white !important;
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4) !important;
+    
+    /* Centrage de l'icône */
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    font-size: 24px !important;
+    transition: transform 0.2s ease-in-out !important;
+}
+
+/* Effet au survol */
+div[data-testid="stPopover"] > button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(75, 121, 255, 0.5) !important;
+}
+
+/* Masquer le label texte s'il y en a un pour ne garder que l'icône */
+div[data-testid="stPopover"] p {
+    display: none !important;
+}
+
+
+/* Bouton Contact Expert (Bas Droite) */
+.sticky-contact-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.sticky-contact-btn {
+    background: #1B1464 !important;
+    color: white !important;
+    border-radius: 50px !important;
+    padding: 12px 24px !important;
+    font-weight: 600 !important;
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+    cursor: pointer;
+
+
+    /* Ajustement du style des popovers Streamlit pour le dark mode */
 div[data-testid="stPopover"] > button { background: linear-gradient(135deg, #7F56D9, #4B79FF) !important; color: white !important; border: none !important; }
-.sticky-contact-btn { background: #7F56D9 !important; color: white !important; border: none !important; }
+.sticky-contact-btn { background: #1B1464 !important; color: white !important; border: none !important; }
+
+}

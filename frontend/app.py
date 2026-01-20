@@ -6,34 +6,33 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from backend.database_manager import DatabaseManager
 from backend.ai_engine import InnoMatcher
-from pages_ui.home import render_home
 
 # Configuration de la page
 st.set_page_config(page_title="InnoRadar", page_icon="⚡", layout="wide")
 
-# Chargement du CSS (Nouveau Design)
+# Chargement du CSS
 css_file = os.path.join(os.path.dirname(__file__), "styles.css")
-with open(css_file) as f:
-    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+if os.path.exists(css_file):
+    with open(css_file) as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-# Initialisation
+# Initialisation du moteur et de la session
 @st.cache_resource
 def get_core():
-    db = DatabaseManager("data/solutions.csv") # Chemin ajusté selon votre Dockerfile
-    # Si le chargement échoue, créer un DB manager vide pour ne pas crasher
-    if db.df is None:
-        st.error("Erreur de chargement de la base de données.")
+    db = DatabaseManager("data/solutions.csv")
     matcher = InnoMatcher(db)
     return db, matcher
 
 db, matcher = get_core()
 
-# Gestion de la navigation
+# Initialisation des variables de navigation
 if 'page' not in st.session_state:
     st.session_state.page = 'home'
+if 'selected_solution' not in st.session_state:
+    st.session_state.selected_solution = None
 
 # --- HEADER CUSTOM ---
-st.markdown("""
+st.markdown(f"""
 <div class="custom-header">
     <div style="display:flex; align-items:center; gap:10px;">
         <span class="logo-icon">⚡</span>
@@ -43,28 +42,43 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# --- ROUTAGE ---
-# On importe les pages dynamiquement pour éviter les dépendances circulaires
+# --- ROUTAGE DES PAGES ---
 if st.session_state.page == 'home':
-    # Note: Assurez-vous d'avoir créé le fichier frontend/pages_ui/home.py
     from pages_ui.home import render_home
     render_home(db)
 
 elif st.session_state.page == 'results':
-    # Note: Assurez-vous d'avoir créé le fichier frontend/pages_ui/results.py
     from pages_ui.results import render_results
     render_results(matcher)
 
-# --- CHATBOT & CONTACT (Global) ---
-with st.sidebar:
-    # Code du chatbot ici (ou popover flottant)
-    pass 
+elif st.session_state.page == 'details':
+    from pages_ui.details import render_details
+    render_details(st.session_state.selected_solution)
 
-# Sticky Contact Button
+# --- CHATBOT FLOTTANT (Bas Gauche) ---
+with st.popover("💬"):
+    st.markdown("### 🤖 Assistant InnoRadar")
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+
+    for msg in st.session_state.messages:
+        with st.chat_message(msg["role"]):
+            st.markdown(msg["content"])
+
+    if prompt := st.chat_input("Une question ?"):
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user"):
+            st.markdown(prompt)
+        with st.chat_message("assistant"):
+            response = matcher.ask_chatbot(prompt)
+            st.markdown(response)
+            st.session_state.messages.append({"role": "assistant", "content": response})
+
+# --- CONTACT EXPERT (Bas Droite) ---
 st.markdown("""
     <div style="position:fixed; bottom:20px; right:20px; z-index:9999;">
         <a href="mailto:samy@aklam.fr" class="cta-btn-purple" style="text-decoration:none;">
-            💬 Parler à un expert
+            🤝 Parler à un expert
         </a>
     </div>
 """, unsafe_allow_html=True)
