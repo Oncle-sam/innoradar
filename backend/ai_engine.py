@@ -17,6 +17,18 @@ class InnoMatcher:
 
 def generate_recommendation(self, user_need, category_filter=None):
         df_filtered = self.db.df
+
+        prompt = f"""
+        Tu es l'expert IA d'InnoRadar.
+        CONTEXTE : {category_filter}
+        BESOIN UTILISATEUR : "{user_need}"
+        
+        SOLUTIONS CANDIDATES :
+        {solutions_text}
+        
+        CONSIGNE : Sélectionne EXACTEMENT les 2 meilleures solutions existantes.
+        Format de sortie : JSON pur.
+        """
         
         # Filtrage par catégorie si spécifié
         if category_filter and category_filter != "Toutes":
@@ -29,22 +41,6 @@ def generate_recommendation(self, user_need, category_filter=None):
         for i, row in subset.iterrows():
             solutions_text += f"- ID {i}: {row['Dénomination actuelle']} (Résumé: {row['Résumé']} | Cas d'usage: {row['Cas d'usage']})\n"
 
-        prompt = f"""
-        Tu es l'expert IA d'InnoRadar, plateforme de matchmaking Sport Tech.
-        
-        BESOIN DE L'UTILISATEUR :
-        "{user_need}"
-        
-        SOLUTIONS DISPONIBLES :
-        {solutions_text}
-        
-        CONSIGNES STRICTES DE RÉPONSE :
-        1. Sélectionne MAXIMUM DEUX (2) solutions les plus pertinentes parmi la liste ci-dessus.
-        2. Ajoute SYSTÉMATIQUEMENT une troisième option nommée "InnoRadar AI Factory".
-        
-        FORMAT DE LA RÉPONSE :
-        - Solution 1 : Nom, Score de match (%), Reasoning (pourquoi ce choix).
-        - Solution 2 : Nom, Score de match (%), Reasoning (pourquoi ce choix).
         
         - Option 3 : InnoRadar AI Factory
           Slogan : "Créez votre propre Agent IA autonome : Architecture, Sécurité & Intégration sur-mesure."

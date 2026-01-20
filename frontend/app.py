@@ -2,75 +2,69 @@ import streamlit as st
 import os
 import sys
 
-# Import des modules backend
+# Ajout du chemin pour importer backend
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from backend.database_manager import DatabaseManager
 from backend.ai_engine import InnoMatcher
+from pages_ui.home import render_home
 
-# Configuration
+# Configuration de la page
 st.set_page_config(page_title="InnoRadar", page_icon="⚡", layout="wide")
 
-# Initialisation DB et IA (en cache pour la performance)
+# Chargement du CSS (Nouveau Design)
+css_file = os.path.join(os.path.dirname(__file__), "styles.css")
+with open(css_file) as f:
+    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+# Initialisation
 @st.cache_resource
-def init_core():
-    db = DatabaseManager("data/solutions.csv")
+def get_core():
+    db = DatabaseManager("data/solutions.csv") # Chemin ajusté selon votre Dockerfile
+    # Si le chargement échoue, créer un DB manager vide pour ne pas crasher
+    if db.df is None:
+        st.error("Erreur de chargement de la base de données.")
     matcher = InnoMatcher(db)
     return db, matcher
 
-db, matcher = init_core()
+db, matcher = get_core()
 
-# Chargement du CSS
-with open("frontend/styles.css") as f:
-    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-
-# --- GESTION DE LA NAVIGATION ---
+# Gestion de la navigation
 if 'page' not in st.session_state:
     st.session_state.page = 'home'
 
-# --- HEADER (Commun) ---
-col_logo, col_auth = st.columns([1, 1])
-with col_logo:
-    st.markdown("### ⚡ Innoradar")
-with col_auth:
-    if st.button("Se connecter", key="auth_btn"):
-        st.session_state.authenticated = True
+# --- HEADER CUSTOM ---
+st.markdown("""
+<div class="custom-header">
+    <div style="display:flex; align-items:center; gap:10px;">
+        <span class="logo-icon">⚡</span>
+        <span class="logo-text">InnoRadar</span>
+    </div>
+    <button class="auth-btn-header">SE CONNECTER</button>
+</div>
+""", unsafe_allow_html=True)
 
-# --- ROUTAGE DES PAGES ---
+# --- ROUTAGE ---
+# On importe les pages dynamiquement pour éviter les dépendances circulaires
 if st.session_state.page == 'home':
-    # Import local pour éviter les imports circulaires
+    # Note: Assurez-vous d'avoir créé le fichier frontend/pages_ui/home.py
     from pages_ui.home import render_home
     render_home(db)
+
 elif st.session_state.page == 'results':
+    # Note: Assurez-vous d'avoir créé le fichier frontend/pages_ui/results.py
     from pages_ui.results import render_results
     render_results(matcher)
 
-# --- CHATBOT FLOTTANT (Bas Gauche) ---
-with st.popover("🤖"):
-    st.markdown("### Assistant InnoRadar")
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
+# --- CHATBOT & CONTACT (Global) ---
+with st.sidebar:
+    # Code du chatbot ici (ou popover flottant)
+    pass 
 
-    for msg in st.session_state.messages:
-        with st.chat_message(msg["role"]):
-            st.markdown(msg["content"])
-
-    if prompt := st.chat_input("Une question sur la Sport Tech ?"):
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user"):
-            st.markdown(prompt)
-        
-        with st.chat_message("assistant"):
-            response = matcher.ask_chatbot(prompt) # Nouvelle méthode dans InnoMatcher
-            st.markdown(response)
-            st.session_state.messages.append({"role": "assistant", "content": response})
-
-# --- BOUTON CONTACT (Bas Droite) ---
-st.markdown(f"""
-    <div class="sticky-contact">
-        <a href="mailto:samy@aklam.fr?subject=Contact InnoRadar" style="text-decoration:none;">
-            <button style="background:#1a1a1a; color:white; border-radius:50px; padding:12px 24px; border:none; cursor:pointer;">
-                🤝 Contacter un expert
-            </button>
+# Sticky Contact Button
+st.markdown("""
+    <div style="position:fixed; bottom:20px; right:20px; z-index:9999;">
+        <a href="mailto:samy@aklam.fr" class="cta-btn-purple" style="text-decoration:none;">
+            💬 Parler à un expert
         </a>
     </div>
 """, unsafe_allow_html=True)
