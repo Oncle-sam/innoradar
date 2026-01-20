@@ -40,6 +40,14 @@ class DatabaseManager:
         """
         return context
 
+    def get_unique_categories(self):
+    """Récupère la liste propre des catégories disponibles."""
+    if self.df is not None:
+        # On récupère les valeurs uniques et on retire les 'Non renseigné'
+        cats = self.df['Catégorisation'].dropna().unique().tolist()
+        return sorted([str(c) for c in cats if str(c) != "Non renseigné"])
+    return []
+
     def search_by_keyword(self, keyword):
         """Recherche simple par mot-clé dans les colonnes principales."""
         mask = self.df.apply(lambda row: keyword.lower() in str(row).lower(), axis=1)

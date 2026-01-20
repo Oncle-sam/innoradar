@@ -1,0 +1,108 @@
+/* 1. Reset & Global Styles */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
+html, body, [class*="css"] {
+    font-family: 'Inter', sans-serif;
+}
+
+/* 2. Custom Header */
+.custom-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: white;
+    border-bottom: 1px solid #f0f2f6;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-icon {
+    font-size: 24px;
+    background: linear-gradient(135deg, #FF4B4B 0%, #4B79FF 100%); /* Vos couleurs */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+}
+
+.logo-text {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+/* 3. Wizard & Cards Styling */
+.stButton button {
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+/* Encadré type "Carte" pour les solutions */
+.solution-card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    transition: transform 0.2s ease;
+}
+
+.solution-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+}
+
+/* Étiquettes (Sponsorisé, Nouveauté, Catégorie) */
+.badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.badge-new { background-color: #e3f2fd; color: #1976d2; }
+.badge-verified { color: #1da1f2; margin-left: 5px; }
+
+/* 4. InnoRadar AI Factory (Mise en avant spécifique) */
+.ai-factory-card {
+    border: 2px solid transparent;
+    background-image: linear-gradient(white, white), linear-gradient(135deg, #FF4B4B, #4B79FF);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+}
+
+/* 5. Sticky Button (Contacter un expert) */
+.sticky-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #1a1a1a;
+    color: white !important;
+    padding: 12px 24px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    z-index: 1000;
+    transition: background 0.3s;
+}
+
+.sticky-button:hover {
+    background: #4B79FF;
+}
+
+/* 6. Hide Streamlit Branding (Pour le mode pro) */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
